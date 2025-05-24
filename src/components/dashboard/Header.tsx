@@ -2,14 +2,21 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -24,6 +31,18 @@ const Header = () => {
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {user?.email}
             </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="w-9 h-9"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </Button>
             <Button variant="outline" onClick={handleLogout}>
               Logout
             </Button>
