@@ -1,21 +1,12 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Github } from 'lucide-react';
 
 const Landing = () => {
-  const { user, login, signup, loginWithGoogle, loginWithGithub } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -23,62 +14,23 @@ const Landing = () => {
     }
   }, [user, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      if (isLogin) {
-        await login(email, password);
-      } else {
-        await signup(email, password, name);
-      }
-    } catch (error) {
-      console.error('Authentication error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      console.error('Google login error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGithubLogin = async () => {
-    setLoading(true);
-    try {
-      await loginWithGithub();
-    } catch (error) {
-      console.error('GitHub login error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
       {/* Header */}
-      <header className="w-full p-6">
+      <header className="w-full p-4 md:p-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">Kaif's Treasure</h1>
-          <div className="flex gap-4">
+          <h1 className="text-xl md:text-2xl font-bold text-white">Kaif's Treasure</h1>
+          <div className="flex gap-2 md:gap-4">
             <Button 
               variant="ghost" 
-              className="text-white hover:bg-white/10"
-              onClick={() => setIsLogin(true)}
+              className="text-white hover:bg-white/20 hover:text-white font-semibold px-3 md:px-4 py-2"
+              onClick={() => navigate('/auth')}
             >
               Login
             </Button>
             <Button 
-              variant="outline" 
-              className="text-white border-white hover:bg-white hover:text-black"
-              onClick={() => setIsLogin(false)}
+              className="bg-white text-blue-900 hover:bg-gray-100 border-2 border-white font-semibold px-3 md:px-6 py-2"
+              onClick={() => navigate('/auth')}
             >
               Sign Up
             </Button>
@@ -87,141 +39,101 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-20">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left side - Hero content */}
-          <div className="text-white space-y-8">
-            <h2 className="text-5xl font-bold leading-tight">
+          <div className="text-white space-y-6 md:space-y-8 text-center lg:text-left">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
               Trade Crypto & Stocks
               <span className="block text-blue-400">Like a Pro</span>
             </h2>
-            <p className="text-xl text-gray-300">
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl">
               Real-time market data, professional charts, and powerful portfolio management tools. 
               Start your trading journey with Kaif's Treasure today.
             </p>
-            <div className="flex gap-4">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button 
+                size="lg" 
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 md:px-8 py-3 text-base md:text-lg border-2 border-blue-600 hover:border-blue-700"
+                onClick={() => navigate('/auth')}
+              >
                 Get Started Free
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+              <Button 
+                size="lg" 
+                className="bg-transparent text-white border-2 border-white hover:bg-white hover:text-blue-900 font-bold px-6 md:px-8 py-3 text-base md:text-lg transition-all duration-200"
+                onClick={() => {
+                  document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 Learn More
               </Button>
             </div>
           </div>
 
-          {/* Right side - Auth form */}
-          <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-              <CardTitle>{isLogin ? 'Welcome Back' : 'Create Account'}</CardTitle>
-              <CardDescription>
-                {isLogin ? 'Sign in to your account' : 'Get started with your free account'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {!isLogin && (
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required={!isLogin}
-                    />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+          {/* Right side - Feature showcase */}
+          <div className="hidden lg:block">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 md:p-8 border border-white/20">
+              <h3 className="text-white text-xl md:text-2xl font-bold mb-4 md:mb-6">Live Market Preview</h3>
+              <div className="space-y-3 md:space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Bitcoin (BTC)</span>
+                  <span className="text-green-400 font-bold">$43,520.00</span>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Ethereum (ETH)</span>
+                  <span className="text-green-400 font-bold">$3,150.50</span>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
-                </Button>
-              </form>
-
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <Button variant="outline" onClick={handleGoogleLogin} disabled={loading}>
-                    Google
-                  </Button>
-                  <Button variant="outline" onClick={handleGithubLogin} disabled={loading}>
-                    <Github className="mr-2 h-4 w-4" />
-                    GitHub
-                  </Button>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Apple (AAPL)</span>
+                  <span className="text-red-400 font-bold">$175.43</span>
                 </div>
               </div>
-
-              <div className="mt-4 text-center text-sm">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-blue-600 hover:underline"
-                >
-                  {isLogin ? 'Sign up' : 'Sign in'}
-                </button>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h3 className="text-3xl font-bold text-white mb-4">Why Choose Kaif's Treasure?</h3>
-          <p className="text-gray-300 text-lg">Professional trading tools at your fingertips</p>
+      <div id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-20">
+        <div className="text-center mb-12 md:mb-16">
+          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Why Choose Kaif's Treasure?</h3>
+          <p className="text-gray-300 text-base md:text-lg">Professional trading tools at your fingertips</p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl">📈</span>
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="text-center group">
+            <div className="bg-blue-600 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+              <span className="text-white text-xl md:text-2xl">📈</span>
             </div>
-            <h4 className="text-xl font-semibold text-white mb-2">Real-time Data</h4>
-            <p className="text-gray-300">Live market data from trusted sources with instant updates</p>
+            <h4 className="text-lg md:text-xl font-semibold text-white mb-2">Real-time Data</h4>
+            <p className="text-gray-300 text-sm md:text-base">Live market data from trusted sources with instant updates</p>
           </div>
-          <div className="text-center">
-            <div className="bg-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl">💼</span>
+          <div className="text-center group">
+            <div className="bg-purple-600 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+              <span className="text-white text-xl md:text-2xl">💼</span>
             </div>
-            <h4 className="text-xl font-semibold text-white mb-2">Portfolio Management</h4>
-            <p className="text-gray-300">Track your investments and analyze performance</p>
+            <h4 className="text-lg md:text-xl font-semibold text-white mb-2">Portfolio Management</h4>
+            <p className="text-gray-300 text-sm md:text-base">Track your investments and analyze performance</p>
           </div>
-          <div className="text-center">
-            <div className="bg-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl">🔒</span>
+          <div className="text-center group sm:col-span-2 md:col-span-1">
+            <div className="bg-indigo-600 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
+              <span className="text-white text-xl md:text-2xl">🔒</span>
             </div>
-            <h4 className="text-xl font-semibold text-white mb-2">Secure & Trusted</h4>
-            <p className="text-gray-300">Bank-level security with multiple authentication options</p>
+            <h4 className="text-lg md:text-xl font-semibold text-white mb-2">Secure & Trusted</h4>
+            <p className="text-gray-300 text-sm md:text-base">Bank-level security with multiple authentication options</p>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-white/20 mt-16 md:mt-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+          <div className="text-center text-gray-400">
+            <p className="text-sm md:text-base">&copy; 2024 Kaif's Treasure. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
